@@ -3,3 +3,4 @@ PyJWT
 uuid
 datetime
 pytest
+sqlalchemy
