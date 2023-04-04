@@ -1,23 +1,20 @@
 from ..database.db import SessionLocal, engine, Base
 from ..models.restaurant_model import User, Restaurant, Dish
-from ..utils.encrypt import create_hashed_password, validate_password
 from sqlalchemy import text
 
 
 Base.metadata.create_all(bind=engine)
 
 
-def create_user(username, password):
+def register_user(username, password):
     db = SessionLocal()
-    new_password = create_hashed_password(password)
-    print("new_password => ", new_password)
-    user = User(username=username, password=new_password)
+    user = User(username=username, password=password)
     db.add(user)
     db.commit()
-    print("usuario creado")
+    print("created user")
 
 
-def login(usermane, password):
+def login_user(usermane):
     with engine.connect() as connection:
         result = connection.execute(text(f"select id, username, password from users where username = '{usermane}';"))
         password_db = None
@@ -26,13 +23,36 @@ def login(usermane, password):
             password_db = row.password
 
         connection.close()
+        return password_db
 
-        login_value = validate_password(password, password_db)
 
-        if login_value:
-            print("ingreso exitoso")
-        else:
-            print("credenciales incorrectas")
+def logout_user():
+    pass
+
+
+def register_restaurant():
+    pass
+
+def add_dish():
+    pass
+
+
+def update_dish():
+    pass
+
+
+def delete_dish():
+    pass
+
+
+#listar los platos del dia
+def get_dishes():
+    pass
+
+
+#platos vendidos (cantidad de platos, cuanto dinero gano)
+def get_dishes_sold():
+    pass
 
 
 
