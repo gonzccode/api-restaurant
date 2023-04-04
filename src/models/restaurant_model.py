@@ -1,6 +1,5 @@
-from sqlalchemy import Column, Integer, Float, String, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, Float, String, Boolean, ForeignKey, LargeBinary
 from sqlalchemy.orm import relationship
-
 from ..database.db import Base
 
 
@@ -32,6 +31,7 @@ class Dish(Base):
     name = Column(String, nullable=False)
     price = Column(Float, nullable=False)
     url = Column(String, nullable=False)
+    status = Column(Boolean, nullable=False)
     restaurant_fk_id = Column(Integer, ForeignKey('restaurants.id'))
 
     restaurant_fk = relationship('Restaurant', back_populates='dishes')
