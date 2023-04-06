@@ -1,5 +1,5 @@
 FLask==2.2.3
-PyJWT==2.6.0
+flask-jwt-extended==4.4.4
 uuid==1.30
 datetime==5.1
 pytest==7.2.2

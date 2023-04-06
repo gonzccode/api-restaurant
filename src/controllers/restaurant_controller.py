@@ -17,13 +17,15 @@ def register_user(username, password):
 def login_user(usermane):
     with engine.connect() as connection:
         result = connection.execute(text(f"select id, username, password from users where username = '{usermane}';"))
+        id_user_db = None
         password_db = None
 
         for row in result:
+            id_user_db = row.id
             password_db = row.password
 
         connection.close()
-        return password_db
+        return id_user_db, password_db
 
 
 def logout_user():
