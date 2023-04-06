@@ -31,8 +31,15 @@ class Dish(Base):
     name = Column(String, nullable=False)
     price = Column(Float, nullable=False)
     url = Column(String, nullable=False)
-    status = Column(Boolean, nullable=False)
+    is_active_day = Column(Integer, nullable=False)
     restaurant_fk_id = Column(Integer, ForeignKey('restaurants.id'))
 
     restaurant_fk = relationship('Restaurant', back_populates='dishes')
 
+#is active day
+"""
+1 = monday
+2 = tuesday
+...
+7 = sunday
+"""
