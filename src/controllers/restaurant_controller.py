@@ -1,5 +1,5 @@
 from ..database.db import SessionLocal, engine, Base
-from ..models.restaurant_model import User, Restaurant, Dish
+from ..models.restaurant_model import User, Restaurant, Dish, DishesSold
 from sqlalchemy import text, update, delete, Table, and_
 
 
@@ -87,16 +87,25 @@ def get_dish(rid, did):
 
 
 #listar los platos del dia
-def get_dishes(rid):
+def get_dishes(rid, day):
     db = SessionLocal()
-    dishes = db.query(Dish).filter(Dish.restaurant_fk_id == rid).all()
-    for dish in dishes:
-        print("dish", dish.id, dish.name, dish.price)
+    if not day:
+        dishes = db.query(Dish).filter(Dish.restaurant_fk_id == rid).all()
+        for dish in dishes:
+            print("dish not day", dish.id, dish.name, dish.price)
+    else:
+        dishes = db.query(Dish).filter(Dish.restaurant_fk_id == rid, Dish.is_active_day == int(day)).all()
+        for dish in dishes:
+            print("dish yes day", dish.id, dish.name, dish.price)
 
 
 #platos vendidos (cantidad de platos, cuanto dinero gano)
-def get_dishes_sold():
-    pass
+def get_dishes_sold(rid):
+    db = SessionLocal()
+    dishes_buy = db.query(DishesSold).filter(DishesSold.restaurant_fk_id == rid).all()
+    for dish in dishes_buy:
+        print("dish sold => ", dish.name, dish.total_price, dish.quantity, dish.date_buy)
+    return dishes_buy
     #aqui la tabla tendria id, restaurant_fk_id, dish_fk_id, name, price_total, quantity, date,
 
 

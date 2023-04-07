@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timedelta
 from sqlalchemy import Column, DateTime, Integer, Float, String, Boolean, ForeignKey, LargeBinary
 from sqlalchemy.orm import relationship
 from ..database.db import Base
@@ -41,13 +41,13 @@ class Dish(Base):
 
 
 class DishesSold(Base):
-    __tablename__ = 'dishes_sold'
-    # aqui la tabla tendria id, restaurant_fk_id, dish_fk_id, name, price_total, quantity, date,
+    __tablename__ = 'sold'
+
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     total_price = Column(Float, nullable=False)
     quantity = Column(Integer, nullable=False)
-    date_buy = Column(DateTime, default=datetime.datetime.utcnow())
+    date_buy = Column(DateTime, default=datetime.utcnow() - timedelta(hours=5))
     restaurant_fk_id = Column(Integer, ForeignKey('restaurants.id'))
     dish_fk_id = Column(Integer, ForeignKey('dishes.id'))
 

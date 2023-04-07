@@ -1,7 +1,7 @@
 from flask import Blueprint, make_response, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity, set_access_cookies
 from ..controllers.restaurant_controller import login_user, register_user, \
-    register_restaurant, add_dish, update_dish, delete_dish, get_dish, get_dishes
+    register_restaurant, add_dish, update_dish, delete_dish, get_dish, get_dishes, get_dishes_sold
 from ..utils.encrypt import create_hashed_password, validate_password
 from ..utils.token import generate_token
 
@@ -36,6 +36,11 @@ def login():
     else:
         # return jsonify({'message': 'Invalid username or password'}), 401
         return make_response('Unable to login', 403, {'Status': 'Invalid credentials'})
+
+
+"""
+    estas haciendo aqui lo de JWT REQUIRED
+"""
 
 
 @restaurant.route("/session/restaurant", methods=['POST'])
@@ -82,7 +87,15 @@ def session_restaurant_update_dish(rid, did):
 
 
 @restaurant.route("/session/restaurant/<int:rid>/dishes", methods=['GET'])
+#session/restaurant/1/dishes?day=1
 #@jwt_required()
 def session_restaurant_get_dishes(rid):
-    dishes = get_dishes(int(rid))
+    day = request.args.get('day', default=None)
+    dishes = get_dishes(int(rid), day)
     return make_response('Successful get dishes', 200)
+
+
+@restaurant.route("/session/restaurant/<int:rid>/buying", methods=['GET'])
+def session_restaurant_buying(rid):
+    dishes_buy = get_dishes_sold(int(rid))
+    return make_response('Successful get dishes sold', 200)
