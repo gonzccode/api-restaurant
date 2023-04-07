@@ -16,5 +16,4 @@ app.register_blueprint(diner, url_prefix="/restaurants")
 @app.route("/", methods=['GET'])
 def dishes():
     if request.method == 'GET':
-        return "WELCOME RESTAURANT API"
-
+        return make_response("WELCOME RESTAURANT API", 200)

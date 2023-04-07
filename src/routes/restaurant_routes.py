@@ -14,7 +14,10 @@ def register():
     password = request.json.get('password')
     new_password = create_hashed_password(password)
     register_user(str(username), str(new_password))
-    return make_response('Successful registration', 200)
+    return jsonify({
+        "ok": True,
+        "message": "Successful user registration"
+    }), 200
 
 
 @restaurant.route("/login", methods=['POST'])
@@ -35,8 +38,10 @@ def login():
 
     else:
         # return jsonify({'message': 'Invalid username or password'}), 401
-        return make_response('Unable to login', 403, {'Status': 'Invalid credentials'})
-
+        return make_response(jsonify({
+            "ok": False,
+            "message": "Unable to login"
+        }), 403, {'Status': 'Invalid credentials'})
 
 """
     estas haciendo aqui lo de JWT REQUIRED
@@ -51,7 +56,10 @@ def session_restaurant():
     name_restaurant = request.json.get('name')
     #register_restaurant(name_restaurant, user_id)
     #register_restaurant(name_restaurant, 1)
-    return make_response('Successful registration restaurant', 200)
+    return make_response(jsonify({
+        "ok": True,
+        "message": "Successful restaurant registration"
+    }), 200)
 
 
 #@restaurant.route("/session/restaurant/:id/dish")
@@ -62,10 +70,11 @@ def session_restaurant_add_dish(rid):
     price_dish = request.json.get('price')
     url_dish = request.json.get('url')
     status_dish = request.json.get('status')
-    #name_restaurant = request.json.get('restaurant')
-    print("id params ", rid)
     add_dish(name_dish, price_dish, url_dish, status_dish, rid)
-    return make_response('Successful add dish', 200)
+    return make_response(jsonify({
+        "ok": True,
+        "message": "Dish added successfully"
+    }), 200)
 
 
 @restaurant.route("/session/restaurant/<int:rid>/dish/<int:did>", methods=['GET', 'PUT', 'DELETE'])
@@ -77,13 +86,23 @@ def session_restaurant_update_dish(rid, did):
         url_dish = request.json.get('url')
         status_dish = request.json.get('is_active_day')
         update_dish(str(name_dish), int(price_dish), str(url_dish), int(status_dish), int(rid), int(did))
-        return make_response('Successful update dish', 200)
+        return make_response(jsonify({
+            "ok": True,
+            "message": "Dish updated successfully"
+        }), 200)
     elif request.method == 'DELETE':
         delete_dish(int(rid), int(did))
-        return make_response('Successful delete dish', 200)
+        return make_response(jsonify({
+            "ok": True,
+            "message": "Dish deleted successfully"
+        }), 200)
     else:
         dish = get_dish(int(rid), int(did))
-        return make_response('Successful get dish', 200)
+        return make_response(jsonify({
+            "ok": True,
+            "message": "Successful dish",
+            "data": dish
+        }), 200)
 
 
 @restaurant.route("/session/restaurant/<int:rid>/dishes", methods=['GET'])
@@ -92,10 +111,18 @@ def session_restaurant_update_dish(rid, did):
 def session_restaurant_get_dishes(rid):
     day = request.args.get('day', default=None)
     dishes = get_dishes(int(rid), day)
-    return make_response('Successful get dishes', 200)
+    return make_response(jsonify({
+            "ok": True,
+            "message": "Restaurant dishes" if not day else "Restaurant's daily dishes",
+            "data": dishes
+        }), 200)
 
 
 @restaurant.route("/session/restaurant/<int:rid>/buying", methods=['GET'])
 def session_restaurant_buying(rid):
     dishes_buy = get_dishes_sold(int(rid))
-    return make_response('Successful get dishes sold', 200)
+    return make_response(jsonify({
+        "ok": True,
+        "message": "Dishes sold",
+        "data": dishes_buy
+    }), 200)
