@@ -47,7 +47,6 @@ def logout(data_user_token):
 
 
 @restaurant.route("/session/restaurant", methods=['GET', 'POST'])
-#error KeyError TryException
 @token_required
 def session_restaurant(data_user_token):
     if request.method == 'POST':
@@ -64,7 +63,6 @@ def session_restaurant(data_user_token):
         return f"Welcome user: {username}. You can register your restaurant with POST"
 
 
-#@restaurant.route("/session/restaurant/:id/dish")
 @restaurant.route("/session/restaurant/<int:rid>/dish", methods=['POST'])
 @token_required
 def session_restaurant_add_dish(data_user_token, rid):
@@ -80,8 +78,6 @@ def session_restaurant_add_dish(data_user_token, rid):
 
 
 @restaurant.route("/session/restaurant/<int:rid>/dish/<int:did>", methods=['GET', 'PUT', 'DELETE'])
-#aqui seria agregar un valor try exception error TypeError
-#tambien si eliminas hay relacion con la tabla de sold
 @token_required
 def session_restaurant_update_dish(data_user_token, rid, did):
     if request.method == 'PUT':

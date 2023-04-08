@@ -42,7 +42,6 @@ def diner_restaurant_id_dishes(rid):
 
 @diner.route("/<int:rid>/dishes/<int:did>", methods=['POST'])
 #muestra informacion de cada plato
-#aqui tiene que añadirse el plato a una CESTA
 def diner_restaurant_id_dish(rid, did):
     quantity = int(request.json.get("quantity"))
     dish = get_diner_restaurant_dish(int(rid), int(did))
