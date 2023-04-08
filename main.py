@@ -5,9 +5,7 @@ from src.routes.diner_routes import diner
 
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = '123456'
-
-jwt = JWTManager(app)
+app.config['SECRET_KEY'] = '26b1dedd2a4841e8a18be98c5a9a38c7'
 
 app.register_blueprint(restaurant)
 app.register_blueprint(diner, url_prefix="/restaurants")
