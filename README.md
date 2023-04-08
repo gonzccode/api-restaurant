@@ -15,7 +15,7 @@ This is a project about an API for the management of a restaurant.
 2. Clone the project using https or ssh.
 3. Once cloned, open the project in your code editor (PyCharm).
 4. Inside the editor, open the terminal.
-5. Check the python version. 
+5. Check the python version. (Install Pyenv)
     ```
     python --version
     ```
