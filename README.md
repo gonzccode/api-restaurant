@@ -46,7 +46,8 @@ This is a project about an API for the management of a restaurant.
     ```
 13. Before running the project you must install PostgreSQL 
 and create your database and its user with password. 
-In the documentation are the steps to replace that 
+In the [documentation](https://docs.google.com/document/d/10AUeQ7tSZ2LV0SrCbiuQ6fT6TCXP_sGxoHqRno5LV70/edit?usp=sharing) 
+are the steps to replace that 
 data within the project
 14. To run the project uses the following command.
     ```
