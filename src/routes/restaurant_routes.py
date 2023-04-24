@@ -1,7 +1,8 @@
 from flask import Blueprint, make_response, request, jsonify, session
 from flask_jwt_extended import jwt_required, get_jwt_identity, set_access_cookies
 from ..controllers.restaurant_controller import login_user, register_user, \
-    register_restaurant, add_dish, update_dish, delete_dish, get_dish, get_dishes, get_dishes_sold
+    register_restaurant, add_dish, update_dish, delete_dish, get_dish, get_dishes, \
+    get_dishes_sold, get_id_restaurant_user_id
 from ..utils.encrypt import create_hashed_password, validate_password
 from ..utils.token import generate_token, token_required
 
@@ -13,11 +14,17 @@ def register():
     username = request.json.get('username')
     password = request.json.get('password')
     new_password = create_hashed_password(password)
-    register_user(str(username), str(new_password))
-    return jsonify({
-        "ok": True,
-        "message": "Successful user registration"
-    }), 200
+    result_register = register_user(str(username), str(new_password))
+    if result_register:
+        return jsonify({
+            "ok": True,
+            "message": "Successful user registration"
+        }), 200
+    else:
+        return jsonify({
+            "ok": False,
+            "message": "Failed to register, user already exists"
+        }), 500
 
 
 @restaurant.route("/login", methods=['POST'])
@@ -25,15 +32,21 @@ def login():
     username = request.json.get('username')
     password = request.json.get('password')
     id_user_db, password_db = login_user(username)
-    login_value = validate_password(str(password), str(password_db))
-    if login_value:
-        response = generate_token(id_user_db, username)
-        return make_response(response, 200)
+    if id_user_db and password_db:
+        login_value = validate_password(str(password), str(password_db))
+        if login_value:
+            response = generate_token(id_user_db, username)
+            return make_response(response, 200)
+        else:
+            return make_response(jsonify({
+                "ok": False,
+                "message": "Unable to login"
+            }), 403, {'Status': 'Invalid credentials'})
     else:
-        return make_response(jsonify({
+        return jsonify({
             "ok": False,
-            "message": "Unable to login"
-        }), 403, {'Status': 'Invalid credentials'})
+            "message": "Can't login, user doesn't exist"
+        }), 500
 
 
 @restaurant.route("/logout", methods=['GET'])
@@ -85,11 +98,18 @@ def session_restaurant_update_dish(data_user_token, rid, did):
         price_dish = request.json.get('price')
         url_dish = request.json.get('url')
         status_dish = request.json.get('is_active_day')
-        update_dish(str(name_dish), int(price_dish), str(url_dish), int(status_dish), int(rid), int(did))
-        return make_response(jsonify({
-            "ok": True,
-            "message": "Dish updated successfully"
-        }), 200)
+        result_update = update_dish(str(name_dish), int(price_dish), str(url_dish), int(status_dish), int(rid), int(did))
+        if result_update:
+            return make_response(jsonify({
+                "ok": True,
+                "message": "Dish updated successfully"
+            }), 200)
+        else:
+            return make_response(jsonify({
+                "ok": False,
+                "message": "Dish not found"
+            }), 404)
+
     elif request.method == 'DELETE':
         delete_dish(int(rid), int(did))
         return make_response(jsonify({
@@ -110,12 +130,20 @@ def session_restaurant_update_dish(data_user_token, rid, did):
 @token_required
 def session_restaurant_get_dishes(data_user_token, rid):
     day = request.args.get('day', default=None)
-    dishes = get_dishes(int(rid), day)
-    return make_response(jsonify({
-            "ok": True,
-            "message": "Restaurant dishes" if not day else "Restaurant's daily dishes",
-            "data": dishes
-        }), 200)
+    user_id = int(data_user_token["id_user"])
+    result_restaurant = get_id_restaurant_user_id(int(rid), user_id)
+    if result_restaurant:
+        dishes = get_dishes(int(rid), day)
+        return make_response(jsonify({
+                "ok": True,
+                "message": "Restaurant dishes" if not day else "Restaurant's daily dishes",
+                "data": dishes
+            }), 200)
+    else:
+        return jsonify({
+            "ok": False,
+            "message": "Restaurant not found"
+        }), 404
 
 
 @restaurant.route("/session/restaurant/<int:rid>/buying", methods=['GET'])

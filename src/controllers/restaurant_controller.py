@@ -1,16 +1,23 @@
 from ..database.db import SessionLocal, engine, Base
 from ..models.restaurant_model import User, Restaurant, Dish, DishesSold
 from sqlalchemy import text
+from sqlalchemy.exc import IntegrityError, NoResultFound
+import logging
 
 
 Base.metadata.create_all(bind=engine)
 
 
 def register_user(username, password):
-    db = SessionLocal()
-    user = User(username=username, password=password)
-    db.add(user)
-    db.commit()
+    try:
+        db = SessionLocal()
+        user = User(username=username, password=password)
+        db.add(user)
+        db.commit()
+        return True
+    except IntegrityError as error:
+        logging.warning(f"Exception Name: {type(error).__name__}")
+        return False
 
 
 def login_user(usermane):
@@ -52,6 +59,18 @@ def get_id_restaurant(name):
         return id_restaurant
 
 
+def get_id_restaurant_user_id(rid, user_id):
+    with engine.connect() as connection:
+        result = connection.execute(text(f"select id, name from restaurants where id = {rid} and user_fk_id = {user_id};"))
+        id_restaurant = None
+
+        for row in result:
+            id_restaurant = row.id
+
+        connection.close()
+        return id_restaurant
+
+
 def add_dish(name, price, url, status, id_restaurant):
     db = SessionLocal()
     #estatus será introduciendo el día miercoles, jueves etc, utilizar datetime
@@ -61,14 +80,19 @@ def add_dish(name, price, url, status, id_restaurant):
 
 
 def update_dish(name, price, url, status, rid, did):
-    db = SessionLocal()
-    new_dish = db.query(Dish).filter_by(id=did).one()
-    new_dish.name = name
-    new_dish.price = price
-    new_dish.url = url
-    new_dish.is_active_day = status
-    db.merge(new_dish)
-    db.commit()
+    try:
+        db = SessionLocal()
+        new_dish = db.query(Dish).filter(Dish.id == did, Dish.restaurant_fk_id == rid).one()
+        new_dish.name = name
+        new_dish.price = price
+        new_dish.url = url
+        new_dish.is_active_day = status
+        db.merge(new_dish)
+        db.commit()
+        return True
+    except NoResultFound as error:
+        logging.warning(f"Exception Name: {type(error).__name__}")
+        return False
 
 
 def delete_dish(rid, did):
